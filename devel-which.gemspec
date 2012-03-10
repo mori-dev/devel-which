@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   EOS
   s.files = [
     "devel-which.gemspec",
+    "doc/diff.txt",
     "lib/devel/which",
     "lib/devel/which/forclass.rb",
     "lib/devel/which/forobject.rb",
