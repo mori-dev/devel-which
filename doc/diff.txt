@@ -1,0 +1,244 @@
+devel-which のみに存在: LICENSE
+devel-which.orig のみに存在: Makefile
+devel-which.orig のみに存在: README
+devel-which のみに存在: README.md
+devel-which のみに存在: Rakefile
+devel-which のみに存在: devel-which-0.3.0.gem
+devel-which のみに存在: devel-which.gemspec
+devel-which.orig のみに存在: doc
+devel-which.orig のみに存在: install.rb
+devel-which.orig のみに存在: install19.rb
+diff -r devel-which.orig/lib/devel/which/forclass.rb devel-which/lib/devel/which/forclass.rb
+1,2d0
+< # $kNotwork: forclass.rb,v 1.2 2002/02/08 19:52:57 gotoken Exp $
+< 
+diff -r devel-which.orig/lib/devel/which/formodule.rb devel-which/lib/devel/which/formodule.rb
+1,2d0
+< # $kNotwork: formodule.rb,v 1.2 2002/02/08 19:52:57 gotoken Exp $
+< 
+7a6
+> 
+9,33c8,33
+< 	name = Devel::Which::name2string(name)
+< 	nest = []
+< 	pos = 0
+< 	  space = mod.name
+< 	begin
+< 	  pos -= 1
+< 	  space = space[0..pos]
+< 	  nest.push(space)
+< 	end while pos = space.rindex(/::/)
+< 	nest.map!{|i| eval "::#{i}"}
+< 	mod.ancestors.each{|i| nest.push i}
+< 	a = (class <<self; self; end).ancestors.each{|i| nest.push i}
+< 	
+< 	cand = nest.find_all{|m| m.const_defined? name}
+< 	
+< 	last = cand.shift
+< 	return nil if not last
+< 	value = last.const_get(name)
+< 	
+< 	while car = cand.shift
+< 	  break if value != car.const_get(name)
+< 	  last = car
+< 	end
+< 	
+< 	last
+---
+> 
+>         name  = Devel::Which::name2string(name)
+>         nest  = []
+>         pos   = 0
+>         space = mod.name
+> 
+>         begin
+>           pos -= 1
+>           space = space[0..pos]
+>           nest.push(space)
+>         end while pos = space.rindex(/::/)
+> 
+>         nest.map!{|i| eval "::#{i}"}
+>         mod.ancestors.each{|i| nest.push i}
+>         a = (class << self; self; end).ancestors.each{|i| nest.push i}
+>         cand = nest.find_all{|m| m.const_defined? name}
+>         last = cand.shift
+>         return nil if not last
+>         value = last.const_get(name)
+> 
+>         while car = cand.shift
+>           break if value != car.const_get(name)
+>           last = car
+>         end
+> 
+>         last
+38,42c38,41
+< 	name = Devel::Which::name2string(name)
+< 	
+< 	mod.ancestors.find{|a|
+< 	  a.instance_methods.include?(name)
+< 	}
+---
+>         name = Devel::Which::name2string(name)
+>         mod.ancestors.find{|a|
+>           a.instance_methods.include?(name)
+>         }
+44a44
+> 
+diff -r devel-which.orig/lib/devel/which/forobject.rb devel-which/lib/devel/which/forobject.rb
+1,2d0
+< # $kNotwork: forobject.rb,v 1.2 2002/01/14 16:20:15 gotoken Exp $
+< 
+9,31c7,29
+< 	unless lib.is_a? String
+< 	  raise TypeError,
+< 	    "wrong argument type #{lib.type} (expected String)"
+< 	end
+< 	ext = ["rb", Config::CONFIG["DLEXT"], Config::CONFIG["DLEXT2"]]
+< 	ext.map!{|i| i.length > 0 ? ".#{i}" : nil}
+< 	ext.compact!
+< 	ext.push("")
+< 	
+< 	at = with = nil
+< 	at = $:.find{|path|
+< 	  file = "#{File::expand_path(path)}/#{lib}"
+< 	  
+< 	  begin
+< 	    with = ext.find{|i|
+< 	      test(?f, file+i) && test(?r, file+i)
+< 	    }
+< 	  rescue
+< 	    next
+< 	  end
+< 	}
+< 	
+< 	"#{at}/#{lib}#{with}" if at
+---
+>         unless lib.is_a? String
+>           raise TypeError,
+>             "wrong argument type #{lib.type} (expected String)"
+>         end
+>         ext = ["rb", Config::CONFIG["DLEXT"], Config::CONFIG["DLEXT2"]]
+>         ext.map!{|i| i.length > 0 ? ".#{i}" : nil}
+>         ext.compact!
+>         ext.push("")
+> 
+>         at = with = nil
+>         at = $:.find{|path|
+>           file = "#{File::expand_path(path)}/#{lib}"
+> 
+>           begin
+>             with = ext.find{|i|
+>               test(?f, file+i) && test(?r, file+i)
+>             }
+>           rescue
+>             next
+>           end
+>         }
+> 
+>         "#{at}/#{lib}#{with}" if at
+36,66c34,64
+< 	unless lib.is_a? String
+< 	  raise TypeError,
+< 	    "wrong argument type #{lib.type} (expected String)"
+< 	end
+< 	unless opt.is_a? Hash
+< 	  raise TypeError,
+< 	    "wrong argument type #{lib.type} (expected Hash)"
+< 	end
+< 	optpath = opt[:path] || opt[:p] || []
+< 	optext = opt[:ext] || opt[:e] || ""
+< 	ext = ["rb", Config::CONFIG["DLEXT"], Config::CONFIG["DLEXT2"], optext]
+< 	ext.map!{|i| i.length > 0 ? ".#{i}" : nil}
+< 	ext.compact!
+< 	ext.push("")
+< 
+< 	at = []
+< 
+< 	($: + optpath).each{|path|
+< 	  with = nil
+< 	  file = "#{File::expand_path(path)}/#{lib}"
+< 	  
+< 	  begin
+< 	    ext.each{|with|
+< 	      if (test(?f, file+with) && test(?r, file+with) rescue false)
+< 		at << "#{path}/#{lib}#{with}"
+< 	      end
+< 	    }
+< 	  rescue
+< 	    next
+< 	  end
+< 	}
+---
+>         unless lib.is_a? String
+>           raise TypeError,
+>             "wrong argument type #{lib.type} (expected String)"
+>         end
+>         unless opt.is_a? Hash
+>           raise TypeError,
+>             "wrong argument type #{lib.type} (expected Hash)"
+>         end
+>         optpath = opt[:path] || opt[:p] || []
+>         optext = opt[:ext] || opt[:e] || ""
+>         ext = ["rb", Config::CONFIG["DLEXT"], Config::CONFIG["DLEXT2"], optext]
+>         ext.map!{|i| i.length > 0 ? ".#{i}" : nil}
+>         ext.compact!
+>         ext.push("")
+> 
+>         at = []
+> 
+>         ($: + optpath).each{|path|
+>           with = nil
+>           file = "#{File::expand_path(path)}/#{lib}"
+> 
+>           begin
+>             ext.each{|with|
+>               if (test(?f, file+with) && test(?r, file+with) rescue false)
+>                 at << "#{path}/#{lib}#{with}"
+>               end
+>             }
+>           rescue
+>             next
+>           end
+>         }
+68c66
+< 	at
+---
+>         at
+70a69
+> 
+diff -r devel-which.orig/lib/devel/which/libwhich.rb devel-which/lib/devel/which/libwhich.rb
+6,7c6,7
+< 	raise TypeError,
+< 	  "wrong argument type #{name.type} (expected String or Symbol)"
+---
+>         raise TypeError,
+>         "wrong argument type #{name.type} (expected String or Symbol)"
+9c9
+< 	name
+---
+>         name
+diff -r devel-which.orig/lib/devel/which.rb devel-which/lib/devel/which.rb
+9c9
+<     VERSION = "0.2.0"
+---
+>     VERSION = "0.3.0"
+43c43
+<   
+---
+> 
+64c64
+< 	Y = "1"
+---
+>         Y = "1"
+77c77
+< 	include M1
+---
+>         include M1
+79,81c79,81
+< 	module C
+< 	  include M2
+< 	end
+---
+>         module C
+>           include M2
+>         end
