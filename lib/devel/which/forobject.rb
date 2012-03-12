@@ -8,7 +8,7 @@ module Devel
           raise TypeError,
             "wrong argument type #{lib.type} (expected String)"
         end
-        ext = ["rb", Config::CONFIG["DLEXT"], Config::CONFIG["DLEXT2"]]
+        ext = ["rb", RbConfig::CONFIG["DLEXT"], RbConfig::CONFIG["DLEXT2"]]
         ext.map!{|i| i.length > 0 ? ".#{i}" : nil}
         ext.compact!
         ext.push("")
@@ -41,7 +41,7 @@ module Devel
         end
         optpath = opt[:path] || opt[:p] || []
         optext = opt[:ext] || opt[:e] || ""
-        ext = ["rb", Config::CONFIG["DLEXT"], Config::CONFIG["DLEXT2"], optext]
+        ext = ["rb", RbConfig::CONFIG["DLEXT"], RbConfig::CONFIG["DLEXT2"], optext]
         ext.map!{|i| i.length > 0 ? ".#{i}" : nil}
         ext.compact!
         ext.push("")

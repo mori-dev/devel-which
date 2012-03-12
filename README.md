@@ -81,6 +81,7 @@ GOTO Kentaro aka Gotoken <gotoken at notwork dot org>
 
 ### FORK
 
+2012-03-13: VERSION 0.3.1 - replaced "Config" to "RbConfig" for Ruby1.9.3
 2012-02-25: VERSION 0.3.0 - added gem, gemspec, Rakefile.
 
 ### ORIGINAL
